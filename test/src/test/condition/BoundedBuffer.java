@@ -53,6 +53,7 @@ class BoundedBuffer {
                 System.out.println("take");
                 try {
                     Object o = boundedBuffer.take();
+                    System.out.println(o);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

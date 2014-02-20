@@ -1,18 +1,16 @@
 package test.htmlParser;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
 import java.io.File;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
-import org.htmlparser.visitors.TextExtractingVisitor;
 import org.htmlparser.Parser;
 
 public class Test3 {
 	private static String ENCODE = "GBK";
 
+	@SuppressWarnings("unused")
 	private static void message(String szMsg) {
 		try {
 			System.out.println(new String(szMsg.getBytes(ENCODE), System

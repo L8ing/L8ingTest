@@ -41,7 +41,7 @@ public class Test1 {
 
 	public static void main(String[] args) throws Exception {
 
-		String szContent = openFile("E:/My Sites/HTMLParserTester.html");
+//		String szContent = openFile("E:/My Sites/HTMLParserTester.html");
 
 		// Parser parser = Parser.createParser(szContent, ENCODE);
 		// Parser parser = new Parser( szContent );

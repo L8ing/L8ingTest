@@ -1,14 +1,16 @@
 package test.dom4j;
 
  import java.util.HashMap;
- import java.util.Iterator;
- import java.util.Map;
+import java.util.Iterator;
+import java.util.Map;
  
+
  import org.dom4j.Document;
- import org.dom4j.DocumentException;
- import org.dom4j.DocumentHelper;
- import org.dom4j.Element;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
  
+ @SuppressWarnings({ "rawtypes", "unchecked" })
  public class TestDom4j {
  
      public void readStringXml(String xml) {

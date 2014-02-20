@@ -1,7 +1,6 @@
 package test.web;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,17 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 public class openUrl {
 	private static ServerSocket server;
@@ -76,7 +71,6 @@ public class openUrl {
 	private static Thread sendThreadStart(final Socket socket) {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				BufferedReader is = null;
 				OutputStream os = null;
 				try {
 					socket.setSoTimeout(20000);
