@@ -10,11 +10,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class TestJsoupByUrl {
+public class TestJsoupByUrl2 {
 
 	private static boolean first = true;
 
-	private static final String titleRedundant = "-顶点小说";
+	private static final String titleRedundant = "_思路客";
 
 	private static boolean isSysout = false;
 
@@ -23,8 +23,8 @@ public class TestJsoupByUrl {
 		Document doc = Jsoup.connect(url).get();
 		String title = doc.title();
 		Element body = doc.body();
-		Element content = body.getElementById("a_main");
-		Element contents = content.getElementById("contents");
+		Element content = body.getElementById("main");
+		Element contents = content.getElementById("content");
 		String linkText = contents.text();
 		char c = linkText.charAt(0);
 		char[] cs = new char[4];
@@ -66,7 +66,7 @@ public class TestJsoupByUrl {
 			title = title.replaceAll(titleRedundant, "");
 			fos = new FileOutputStream(new File(desDir + title + ".txt"));
 			Element body = doc.body();
-			Element content = body.getElementById("a_main");
+			Element content = body.getElementById("indexmain");
 			Elements links = content.getElementsByTag("a");
 			for (Element link : links) {
 				String linkHref = link.attr("href");
@@ -97,7 +97,7 @@ public class TestJsoupByUrl {
 	public static void main(String[] args) throws Exception {
 		String desDir = "e:\\books\\";
 
-		String url = "http://www.23us.com/html/9/9362/";
+		String url = "http://www.siluke.com/0/82/82336/";
 		handleDir(url, desDir);
 
 		// String url = "http://www.23us.com/html/9/9362/2660200.html";

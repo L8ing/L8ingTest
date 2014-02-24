@@ -3,6 +3,7 @@ package test.jsoup;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 
 import org.jsoup.Jsoup;
@@ -10,7 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class TestJsoupByUrl {
+public class TestJsoupByUrl3 {
 
 	private static boolean first = true;
 
@@ -23,27 +24,71 @@ public class TestJsoupByUrl {
 		Document doc = Jsoup.connect(url).get();
 		String title = doc.title();
 		Element body = doc.body();
-		Element content = body.getElementById("a_main");
-		Element contents = content.getElementById("contents");
-		String linkText = contents.text();
-		char c = linkText.charAt(0);
-		char[] cs = new char[4];
-		Arrays.fill(cs, c);
-		String s = new String(cs);
-		linkText = linkText.replaceAll(s, "\r\n\r\n");
+		Element content = body.getElementById("maincontent");
+		int titleIndex1 = title.indexOf('/');
+		int titleIndex2 = title.lastIndexOf('/');
+		if (titleIndex1 > 0 && titleIndex2 > 0 && titleIndex2 != titleIndex1) {
+			title = title.substring(titleIndex1 + 1, titleIndex2);
+		} else {
+			throw new Exception("title : " + title);
+		}
+		Element contents = content.getElementById("content");
+		Element e1 = contents.getElementsByAttribute("src").first();
+		String src = e1.attr("src");
+		String charset = e1.attr("charset");
+		// String linkText = "";
+		// char c = linkText.charAt(0);
+		// char[] cs = new char[4];
+		// Arrays.fill(cs, c);
+		// String s = new String(cs);
+		// linkText = linkText.replaceAll(s, "\r\n\r\n");
+		String text = handle(src, charset);
 		if (first) {
 			first = false;
 		} else {
 			fos.write(("\r\n\r\n-------------------------------\r\n\r\n")
-					.getBytes("GBK"));
+					.getBytes("UTF-8"));
 		}
 
 		title = title.replaceAll(titleRedundant, "");
-		fos.write(title.getBytes("GBK"));
-		fos.write(linkText.getBytes("GBK"));
+		fos.write(title.getBytes("UTF-8"));
+		fos.write(text.getBytes("UTF-8"));
 	}
 
-	@SuppressWarnings("unused")
+	private static String handle(String url, String charset) throws Exception {
+		// Document doc = Jsoup.parse(url);
+		// Document doc = Jsoup.connect(url).get();
+		Document doc = Jsoup.parse(new URL(url).openStream(), charset, url);
+		// String title = doc.title();
+		Element body = doc.body();
+		Elements linkHref = doc.getElementsByAttribute("href");
+		linkHref.remove();
+		// Node Node = doc.removeAttr("href");
+		String content = body.text();
+		String s1 = "document.write('";
+		String s2 = "');";
+		if (content.startsWith(s1)) {
+			content = content.substring(s1.length());
+		}
+		if (content.endsWith(s2)) {
+			content = content.substring(0, content.length() - s2.length());
+		}
+		// Elements content = body.getElementsByTag("p");
+		// Element contents = content.getElementById("content");
+		// Element e1 = content.getElementsByAttribute("src").first();
+		// String src = e1.attr("src");;
+		// String charset = e1.attr("charset");
+		// String linkText =content;
+		char c = content.charAt(0);
+		char[] cs = new char[2];
+		Arrays.fill(cs, c);
+		String s = new String(cs);
+		content = content.replaceAll(s, "\r\n\r\n");
+
+		// title = title.replaceAll(titleRedundant, "");
+		return content;
+	}
+
 	private static void handleFile(String url, String desDir) throws Exception {
 		FileOutputStream fos = null;
 		try {
@@ -58,6 +103,7 @@ public class TestJsoupByUrl {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void handleDir(String url, String desDir) throws IOException {
 		FileOutputStream fos = null;
 		try {
@@ -97,10 +143,10 @@ public class TestJsoupByUrl {
 	public static void main(String[] args) throws Exception {
 		String desDir = "e:\\books\\";
 
-		String url = "http://www.23us.com/html/9/9362/";
-		handleDir(url, desDir);
+		String url = "http://read.qidian.com/BookReader/182451,4656097.aspx";
+		// handleDir(url, desDir);
 
 		// String url = "http://www.23us.com/html/9/9362/2660200.html";
-		// handleFile(url, desDir);
+		handleFile(url, desDir);
 	}
 }
