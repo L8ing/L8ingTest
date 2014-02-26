@@ -11,11 +11,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * @author Administrator 起点篡清
+ */
 public class TestJsoupByUrl3 {
 
 	private static boolean first = true;
 
-	private static final String titleRedundant = "-顶点小说";
+	private static final String titleRedundant = null;
 
 	private static boolean isSysout = false;
 
@@ -36,12 +39,6 @@ public class TestJsoupByUrl3 {
 		Element e1 = contents.getElementsByAttribute("src").first();
 		String src = e1.attr("src");
 		String charset = e1.attr("charset");
-		// String linkText = "";
-		// char c = linkText.charAt(0);
-		// char[] cs = new char[4];
-		// Arrays.fill(cs, c);
-		// String s = new String(cs);
-		// linkText = linkText.replaceAll(s, "\r\n\r\n");
 		String text = handle(src, charset);
 		if (first) {
 			first = false;
@@ -49,21 +46,18 @@ public class TestJsoupByUrl3 {
 			fos.write(("\r\n\r\n-------------------------------\r\n\r\n")
 					.getBytes("UTF-8"));
 		}
-
-		title = title.replaceAll(titleRedundant, "");
+		if (titleRedundant != null) {
+			title = title.replaceAll(titleRedundant, "");
+		}
 		fos.write(title.getBytes("UTF-8"));
 		fos.write(text.getBytes("UTF-8"));
 	}
 
 	private static String handle(String url, String charset) throws Exception {
-		// Document doc = Jsoup.parse(url);
-		// Document doc = Jsoup.connect(url).get();
 		Document doc = Jsoup.parse(new URL(url).openStream(), charset, url);
-		// String title = doc.title();
 		Element body = doc.body();
 		Elements linkHref = doc.getElementsByAttribute("href");
 		linkHref.remove();
-		// Node Node = doc.removeAttr("href");
 		String content = body.text();
 		String s1 = "document.write('";
 		String s2 = "');";
@@ -73,19 +67,11 @@ public class TestJsoupByUrl3 {
 		if (content.endsWith(s2)) {
 			content = content.substring(0, content.length() - s2.length());
 		}
-		// Elements content = body.getElementsByTag("p");
-		// Element contents = content.getElementById("content");
-		// Element e1 = content.getElementsByAttribute("src").first();
-		// String src = e1.attr("src");;
-		// String charset = e1.attr("charset");
-		// String linkText =content;
 		char c = content.charAt(0);
 		char[] cs = new char[2];
 		Arrays.fill(cs, c);
 		String s = new String(cs);
 		content = content.replaceAll(s, "\r\n\r\n");
-
-		// title = title.replaceAll(titleRedundant, "");
 		return content;
 	}
 
@@ -109,7 +95,9 @@ public class TestJsoupByUrl3 {
 		try {
 			Document doc = Jsoup.connect(url).get();
 			String title = doc.title();
-			title = title.replaceAll(titleRedundant, "");
+			if (titleRedundant != null) {
+				title = title.replaceAll(titleRedundant, "");
+			}
 			fos = new FileOutputStream(new File(desDir + title + ".txt"));
 			Element body = doc.body();
 			Element content = body.getElementById("a_main");

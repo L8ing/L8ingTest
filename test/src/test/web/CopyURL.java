@@ -50,11 +50,11 @@ public class CopyURL {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String url = "http://www.23us.com/html/9/9362/2660200.html";
+		// String url = "http://www.23us.com/html/9/9362/2660200.html";
 		// String url = "http://www.23us.com/html/9/9362/";
-
+		String url = "http://www.360doc.com/content/11/0524/16/0_119075203.shtml";
 		byte[] b = copyUrl(url);
-		String s = new String(b, "gbk");
+		String s = new String(b, "utf-8");
 		System.out.println(s);
 
 		// copyUrl1(url);

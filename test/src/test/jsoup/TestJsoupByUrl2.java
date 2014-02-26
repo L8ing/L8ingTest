@@ -10,6 +10,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * @author Administrator 晚明
+ */
 public class TestJsoupByUrl2 {
 
 	private static boolean first = true;
