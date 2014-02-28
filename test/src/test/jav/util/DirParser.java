@@ -76,10 +76,10 @@ public class DirParser {
 	}
 
 	public static void main(String[] args) throws Exception {
-		File f = new File("D:\\Files\\Books\\cs\\Linux");
+		File f = new File("E:\\video\\japs");
 		JSONObject o = build(f);
 		System.out.println(o);
-		File test = new File("E:\\books\\test.json");
+		File test = new File("E:\\11.json");
 		writeStringToFile(test, o.toString(), "gbk");
 		String s = readFileToString(test, "gbk");
 		parse(s);
