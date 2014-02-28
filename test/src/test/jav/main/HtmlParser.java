@@ -2,27 +2,37 @@ package test.jav.main;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class HtmlParser {
+
+	public static final String VIDEO_NAME = "影片名稱";
+	public static final String ACTRESS_NAME = "出演女優";
+	public static final String FORMAT = "影片格式";
+	public static final String SIZE = "影片大小";
+	public static final String TIME = "影片時間";
+	public static final String UNCENSORED = "是否有碼";
 
 	public static void copyUrl(FileOutputStream fos, String url)
 			throws Exception {
 		InputStream is = null;
 		try {
 			URL server = new URL(url);
-			System.setProperty("http.proxyType", "4");
-
-			System.setProperty("http.proxyPort", "8087");
-
-			System.setProperty("http.proxyHost", "127.0.0.1");
-
-			System.setProperty("http.proxySet", "true");
+			// System.setProperty("http.proxyType", "4");
+			//
+			// System.setProperty("http.proxyPort", "8087");
+			//
+			// System.setProperty("http.proxyHost", "127.0.0.1");
+			//
+			// System.setProperty("http.proxySet", "true");
 
 			HttpURLConnection connection = (HttpURLConnection) server
 					.openConnection();
@@ -82,17 +92,28 @@ public class HtmlParser {
 		}
 	}
 
+	public static void fromFile(String url) throws IOException {
+		Document doc = Jsoup.parse(new File("E:\\books\\html.html"), "gbk");
+		Elements elements = doc.getElementsMatchingOwnText(".torrent");
+
+		Elements videoName = doc.getElementsMatchingOwnText(VIDEO_NAME);
+		String s = videoName.first().text();
+		
+		int index = url.lastIndexOf('/');
+		String parent = url.substring(0, index);
+		for (Element e : elements) {
+			String href = e.attr("href");
+			String realRef = parent + '/' + href;
+			System.out.println(realRef);
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 		String desDir = "e:\\books\\";
-		String url = "http://e.sis001.us/forum/thread-8894986-1-37.html";
+		String url = "http://sis001.us/bbs/thread-8968372-1-1.html";
 
-		handleFile(url, desDir);
-		// String s = new String(b, "gbk");
-		// System.out.println(s);
+		// handleFile(url, desDir);
 
-		// handleDir(url, desDir);
-
-		// String url = "http://www.23us.com/html/9/9362/2660200.html";
-		// handleRef(url);
+		fromFile(url);
 	}
 }
