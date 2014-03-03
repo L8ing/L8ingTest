@@ -13,4 +13,15 @@
 		select
 		* from t_video where designation=#{designation}
 	</select>
+	<insert id="insertActress" parameterType="Actress">
+		insert into
+		t_actress(name,rank)
+		values (#{name},#{rank})
+	</insert>
+	<insert id="insertVideo" parameterType="Video">
+		insert into
+		t_video(designation,video_name,uncensored,actress,theme,size,format)
+		values
+		(#{designation},#{video_name},#{uncensored},#{actress},#{theme},#{size},#{format})
+	</insert>
 </mapper>  

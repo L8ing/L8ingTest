@@ -9,4 +9,7 @@ public interface MybatisMapper {
 
 	public Video findVideoByDesignation(String designation);
 
+	public int insertActress(Actress actress);
+
+	public int insertVideo(Video video);
 }

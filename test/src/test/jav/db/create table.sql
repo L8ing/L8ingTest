@@ -1,12 +1,9 @@
-create table t_actress(name varchar(32) not null, rank char(1) not null);
+create table t_actress(name varchar(32) not null, rank char(1));
 
 alter table t_actress add primary key(name);
 
-insert into t_actress(name,rank
-)values('本多成实','A');
-
-create table t_video(designation varchar(16) not null, video_name varchar(60) not null, uncensored boolean not null,
-	actress varchar(32) not null,theme varchar(32),size double(5,2),format varchar(10));
+create table t_video(designation varchar(60) not null, video_name varchar(250), uncensored int,
+	actress varchar(32),theme varchar(32),size double(5,2),format varchar(10), comment varchar(250));
 
 alter table t_video add primary key(designation);
 

@@ -13,6 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import test.jav.data.Actress;
+import test.jav.data.Video;
+import test.jav.db.DBHandler;
+
 public class DirParser {
 
 	private static final String NAME_KEY = "name";
@@ -35,9 +39,9 @@ public class DirParser {
 		return object;
 	}
 
-	public static void parse(String json) throws JSONException {
+	public static JSONObject parse(String json) throws JSONException {
 		JSONObject object = new JSONObject(json);
-		System.out.println(object);
+		return object;
 	}
 
 	public static String readFileToString(File file, String encoding)
@@ -75,13 +79,158 @@ public class DirParser {
 		}
 	}
 
+	private static void parseActressArray(JSONObject jsonObject, String rank)
+			throws JSONException {
+		String uncensored = jsonObject.getString("name");
+		JSONArray actressArray = jsonObject.getJSONArray("children");
+		for (int j = 0; j < actressArray.length(); j++) {
+			JSONObject actress = actressArray.getJSONObject(j);
+			String actressName = actress.getString("name");
+			push2ActressTable(actressName, rank);
+			JSONArray videoArray = actress.getJSONArray("children");
+			for (int k = 0; k < videoArray.length(); k++) {
+				JSONObject video = videoArray.getJSONObject(k);
+				String videoName = video.getString("name");
+				int index = videoName.indexOf(' ');
+				String designation = videoName;
+				String videoRealName = "";
+				if (index >= 0) {
+					designation = videoName.substring(0, index);
+					videoRealName = videoName.substring(index,
+							videoName.length());
+					int dotIndex = videoRealName.indexOf('.');
+					if (dotIndex >= 0) {
+						videoRealName = videoRealName.substring(0, dotIndex);
+					}
+				}
+				push2VideoTable(designation, videoRealName, actressName,
+						uncensored, null, null);
+			}
+		}
+	}
+
+	private static void parseThemeArray(JSONObject jsonObject, String theme)
+			throws JSONException {
+		JSONArray actressArray = jsonObject.getJSONArray("children");
+		for (int j = 0; j < actressArray.length(); j++) {
+			JSONObject actress = actressArray.getJSONObject(j);
+			String name = actress.getString("name");
+			int index = name.indexOf(' ');
+			String designation = name;
+			String comment = "";
+			if (index >= 0) {
+				designation = name.substring(0, index);
+				comment = name.substring(index, name.length());
+				int dotIndex = comment.indexOf('.');
+				if (dotIndex >= 0) {
+					comment = comment.substring(0, dotIndex);
+				}
+			}
+			push2VideoTable(designation, null, null, null, theme, comment);
+		}
+	}
+
+	private static void push2Db(JSONObject jsonObject) throws JSONException {
+		JSONArray resultsArray = jsonObject.getJSONArray("children");
+		for (int i = 0; i < resultsArray.length(); i++) {
+			JSONObject o = resultsArray.getJSONObject(i);
+			String name = o.getString("name");
+			if ("A".equals(name)) {
+				parseActressArray(o, name);
+			} else if ("B".equals(name)) {
+				JSONArray zArray = o.getJSONArray("children");
+				for (int z = 0; z < zArray.length(); z++) {
+					JSONObject zz = zArray.getJSONObject(z);
+					parseActressArray(zz, name);
+				}
+			} else if (!"sm".equals(name) && !"Thumbs.db".equals(name)) {
+				parseThemeArray(o, name);
+			}
+		}
+	}
+
+	private static void push2VideoTable(String designation,
+			String videoRealName, String actressName, String uncensored,
+			String theme, String comment) {
+		// TODO Auto-generated method stub
+		System.out.println(designation + " : " + videoRealName + " : "
+				+ actressName + " : " + uncensored + " : " + theme + " : "
+				+ comment);
+		if ("unknown".equals(designation) || "Thumbs.db".equals(designation)) {
+			return;
+		}
+		try {
+			Video video = DBHandler.findVideoByDesignation(designation);
+			if (video != null) {
+				return;
+			}
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.err.println(designation);
+		}
+		Video video = new Video();
+		video.setDesignation(designation);
+		if (videoRealName != null) {
+			video.setVideo_name(videoRealName);
+		}
+		if (actressName != null) {
+			video.setActress(actressName);
+		}
+		if ("infantry".equals(uncensored)) {
+			video.setUncensored(0);
+		} else if ("cavalry".equals(uncensored)) {
+			video.setUncensored(1);
+		} else {
+			video.setUncensored(-1);
+		}
+		if (theme != null) {
+			video.setTheme(theme);
+		}
+		if (comment != null) {
+			video.setComment(comment);
+		}
+		try {
+			DBHandler.insertVideo(video);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.err.println(designation + " : " + videoRealName + " : "
+					+ actressName);
+		}
+	}
+
+	private static void push2ActressTable(String actressName, String rank) {
+		System.out.println(actressName + " : " + rank);
+		try {
+			Actress actress = DBHandler.findActressByName(actressName);
+			if (actress != null) {
+				return;
+			}
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.err.println(actressName + " : " + rank);
+		}
+		Actress actress = new Actress();
+		actress.setName(actressName);
+		if (rank != null) {
+			actress.setRank(rank);
+		}
+		try {
+			DBHandler.insertActress(actress);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.err.println(actressName + " : " + rank);
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
-		File f = new File("E:\\video\\japs");
-		JSONObject o = build(f);
-		System.out.println(o);
-		File test = new File("E:\\11.json");
-		writeStringToFile(test, o.toString(), "gbk");
+		// File f = new File("E:\\video\\japs");
+		// JSONObject o = build(f);
+		// System.out.println(o);
+		File test = new File("E:\\books\\11.json");
+		// writeStringToFile(test, o.toString(), "gbk");
 		String s = readFileToString(test, "gbk");
-		parse(s);
+		JSONObject object = parse(s);
+		push2Db(object);
+
 	}
 }

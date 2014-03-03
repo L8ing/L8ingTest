@@ -78,6 +78,7 @@ public class HtmlParser {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void handleFile(String url, String desDir) throws Exception {
 		FileOutputStream fos = null;
 		try {
@@ -98,7 +99,27 @@ public class HtmlParser {
 
 		Elements videoName = doc.getElementsMatchingOwnText(VIDEO_NAME);
 		String s = videoName.first().text();
-		
+		String[] list = s.split("【");
+		for (String element : list) {
+			int index = element.indexOf('：');
+			if (index >= 0) {
+				String key = element.substring(0, index);
+				String value = element.substring(index + 1).trim();
+				if (key.indexOf(VIDEO_NAME) >= 0) {
+					System.out.println(VIDEO_NAME + " : " + value);
+				} else if (key.indexOf(ACTRESS_NAME) >= 0) {
+					System.out.println(ACTRESS_NAME + " : " + value);
+				} else if (key.indexOf(FORMAT) >= 0) {
+					System.out.println(FORMAT + " : " + value);
+				} else if (key.indexOf(SIZE) >= 0) {
+					System.out.println(SIZE + " : " + value);
+				} else if (key.indexOf(TIME) >= 0) {
+					System.out.println(TIME + " : " + value);
+				} else if (key.indexOf(UNCENSORED) >= 0) {
+					System.out.println(UNCENSORED + " : " + value);
+				}
+			}
+		}
 		int index = url.lastIndexOf('/');
 		String parent = url.substring(0, index);
 		for (Element e : elements) {
@@ -109,7 +130,7 @@ public class HtmlParser {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String desDir = "e:\\books\\";
+//		String desDir = "e:\\books\\";
 		String url = "http://sis001.us/bbs/thread-8968372-1-1.html";
 
 		// handleFile(url, desDir);

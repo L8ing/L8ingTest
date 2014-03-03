@@ -8,7 +8,7 @@ public class Video {
 
 	private String video_name;
 
-	private boolean uncensored;
+	private int uncensored;
 
 	private String actress;
 
@@ -17,8 +17,8 @@ public class Video {
 	private double size;
 
 	private String format;
-	
-	private Actress ac;
+
+	private String comment;
 
 	public String toString() {
 		String s = null;
@@ -46,11 +46,11 @@ public class Video {
 		this.video_name = video_name;
 	}
 
-	public boolean isUncensored() {
+	public int isUncensored() {
 		return uncensored;
 	}
 
-	public void setUncensored(boolean uncensored) {
+	public void setUncensored(int uncensored) {
 		this.uncensored = uncensored;
 	}
 
@@ -86,12 +86,12 @@ public class Video {
 		this.format = format;
 	}
 
-	public Actress getAc() {
-		return ac;
+	public String getComment() {
+		return comment;
 	}
 
-	public void setAc(Actress ac) {
-		this.ac = ac;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 }
