@@ -1,4 +1,5 @@
-create table t_actress(name varchar(32) not null, rank char(1));
+create table t_actress(name varchar(32) not null, rank char(1),alias1 varchar(32),alias2 varchar(32),
+alias3 varchar(32),alias4 varchar(32),alias5 varchar(32),alias6 varchar(32));
 
 alter table t_actress add primary key(name);
 

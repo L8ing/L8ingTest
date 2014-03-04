@@ -97,7 +97,7 @@ public class DirParser {
 				if (index >= 0) {
 					designation = videoName.substring(0, index);
 					videoRealName = videoName.substring(index,
-							videoName.length());
+							videoName.length()).trim();
 					int dotIndex = videoRealName.indexOf('.');
 					if (dotIndex >= 0) {
 						videoRealName = videoRealName.substring(0, dotIndex);
@@ -120,13 +120,20 @@ public class DirParser {
 			String comment = "";
 			if (index >= 0) {
 				designation = name.substring(0, index);
-				comment = name.substring(index, name.length());
+				comment = name.substring(index, name.length()).trim();
 				int dotIndex = comment.indexOf('.');
 				if (dotIndex >= 0) {
 					comment = comment.substring(0, dotIndex);
 				}
 			}
-			push2VideoTable(designation, null, null, null, theme, comment);
+			String actressName = "";
+			if ("搜查官".equals(theme) || "触手".equals(theme)) {
+				actressName = comment;
+				comment = "";
+				push2ActressTable(actressName, null);
+			}
+			push2VideoTable(designation, null, actressName, null, theme,
+					comment);
 		}
 	}
 
@@ -143,7 +150,9 @@ public class DirParser {
 					JSONObject zz = zArray.getJSONObject(z);
 					parseActressArray(zz, name);
 				}
-			} else if (!"sm".equals(name) && !"Thumbs.db".equals(name)) {
+			} else if (!"sm".equals(name) && !"Thumbs.db".equals(name)
+					&& !"花与蛇".equals(name)) {
+				System.out.println(name);
 				parseThemeArray(o, name);
 			}
 		}
@@ -226,8 +235,13 @@ public class DirParser {
 		// File f = new File("E:\\video\\japs");
 		// JSONObject o = build(f);
 		// System.out.println(o);
-		File test = new File("E:\\books\\11.json");
-		// writeStringToFile(test, o.toString(), "gbk");
+		File parent = new File(".");
+		// System.out.println(.getAbsolutePath());
+		// File test = new File("E:\\books\\11.json");
+		String name = DirParser.class.getPackage().getName();
+		name = name.replaceAll("\\.", "/");
+		File test = new File(parent, "src\\" + name + "\\dir.json");
+		System.out.println(test.getAbsolutePath());
 		String s = readFileToString(test, "gbk");
 		JSONObject object = parse(s);
 		push2Db(object);

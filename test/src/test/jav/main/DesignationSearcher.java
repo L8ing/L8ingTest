@@ -3,6 +3,8 @@ package test.jav.main;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,11 +33,15 @@ public class DesignationSearcher {
 
 	public static final String RESULTS_VISIBLEURL = "visibleUrl";
 
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
+	private static final String webSite = "sis001.us";
+
+	public static List<String> searchUrlByDesignation(String designation)
+			throws IOException {
+		List<String> result = new ArrayList<String>();
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpget = new HttpGet(
-				"http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=ebod-346+site:sis001.us");
+				"http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q="
+						+ designation + "+site:" + webSite);
 		HttpResponse response = httpclient.execute(httpget);
 		System.out.println(response.getStatusLine());
 
@@ -59,6 +65,7 @@ public class DesignationSearcher {
 					String content = addressObject.getString(RESULTS_CONTENT);
 					System.out.print("content: ");
 					System.out.println(content);
+					result.add(url);
 					// ParseHtml.copyUrl(url);
 				}
 
@@ -74,5 +81,14 @@ public class DesignationSearcher {
 			}
 		}
 		httpclient.getConnectionManager().shutdown();
+		return result;
+	}
+
+	public static void main(String[] args) throws IOException {
+		String designation = "wanz-151";
+		List<String> urls = searchUrlByDesignation(designation);
+		for (String url : urls) {
+
+		}
 	}
 }

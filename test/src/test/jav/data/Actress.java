@@ -8,6 +8,18 @@ public class Actress {
 
 	private String rank;
 
+	private String alias1;
+
+	private String alias2;
+
+	private String alias3;
+
+	private String alias4;
+
+	private String alias5;
+
+	private String alias6;
+
 	public String toString() {
 		String s = null;
 		try {
@@ -32,5 +44,53 @@ public class Actress {
 
 	public void setRank(String rank) {
 		this.rank = rank;
+	}
+
+	public String getAlias1() {
+		return alias1;
+	}
+
+	public void setAlias1(String alias1) {
+		this.alias1 = alias1;
+	}
+
+	public String getAlias2() {
+		return alias2;
+	}
+
+	public void setAlias2(String alias2) {
+		this.alias2 = alias2;
+	}
+
+	public String getAlias3() {
+		return alias3;
+	}
+
+	public void setAlias3(String alias3) {
+		this.alias3 = alias3;
+	}
+
+	public String getAlias4() {
+		return alias4;
+	}
+
+	public void setAlias4(String alias4) {
+		this.alias4 = alias4;
+	}
+
+	public String getAlias5() {
+		return alias5;
+	}
+
+	public void setAlias5(String alias5) {
+		this.alias5 = alias5;
+	}
+
+	public String getAlias6() {
+		return alias6;
+	}
+
+	public void setAlias6(String alias6) {
+		this.alias6 = alias6;
 	}
 }

@@ -8,13 +8,13 @@ public class Video {
 
 	private String video_name;
 
-	private int uncensored;
+	private int uncensored = -1;
 
 	private String actress;
 
 	private String theme;
 
-	private double size;
+	private double size = 0.0;
 
 	private String format;
 

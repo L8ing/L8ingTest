@@ -78,21 +78,6 @@ public class HtmlParser {
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private static void handleFile(String url, String desDir) throws Exception {
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(new File(desDir + "html.txt"));
-			copyUrl(fos, url);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (fos != null) {
-				fos.close();
-			}
-		}
-	}
-
 	public static void fromFile(String url) throws IOException {
 		Document doc = Jsoup.parse(new File("E:\\books\\html.html"), "gbk");
 		Elements elements = doc.getElementsMatchingOwnText(".torrent");
@@ -132,8 +117,6 @@ public class HtmlParser {
 	public static void main(String[] args) throws Exception {
 //		String desDir = "e:\\books\\";
 		String url = "http://sis001.us/bbs/thread-8968372-1-1.html";
-
-		// handleFile(url, desDir);
 
 		fromFile(url);
 	}

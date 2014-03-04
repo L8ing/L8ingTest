@@ -8,6 +8,24 @@
 		select
 		* from t_actress where name=#{name}
 	</select>
+	<select id="findActressByRank" parameterType="String"
+		resultType="Actress">
+		select
+		* from t_actress where rank=#{rank}
+	</select>
+	<select id="findVideoByActress" parameterType="String"
+		resultType="Video">
+		select
+		* from t_video where actress=#{actressName}
+	</select>
+	<select id="findVideoByTheme" parameterType="String" resultType="Video">
+		select
+		* from t_video where theme=#{theme}
+	</select>
+	<select id="findAllThemes" resultType="String">
+		select distinct(theme)
+		from t_video
+	</select>
 	<select id="findVideoByDesignation" parameterType="String"
 		resultType="Video">
 		select
@@ -15,13 +33,27 @@
 	</select>
 	<insert id="insertActress" parameterType="Actress">
 		insert into
-		t_actress(name,rank)
-		values (#{name},#{rank})
+		t_actress(name,rank,alias1,alias2,alias3,alias4,alias5,alias6)
+		values
+		(#{name},#{rank},#{alias1},#{alias2},#{alias3},#{alias4},#{alias5},#{alias6})
 	</insert>
 	<insert id="insertVideo" parameterType="Video">
 		insert into
-		t_video(designation,video_name,uncensored,actress,theme,size,format)
+		t_video(designation,video_name,uncensored,actress,theme,size,format,comment)
 		values
-		(#{designation},#{video_name},#{uncensored},#{actress},#{theme},#{size},#{format})
+		(#{designation},#{video_name},#{uncensored},#{actress},#{theme},#{size},#{format},#{comment})
 	</insert>
+	<update id="updateActress" parameterType="Actress">
+		update t_actress set
+		rank=#{rank},alias1=#{alias1},alias2=#{alias2},alias3=#{alias3},
+		alias4=#{alias4},alias5=#{alias5},alias6=#{alias6}
+		where name=#{name}
+	</update>
+	<update id="updateVideo" parameterType="Video">
+		update t_video set
+		video_name=#{video_name},uncensored=#{uncensored},actress=#{actress},
+		theme=#{theme},size=#{size},format=#{format},comment=#{comment}
+		where
+		designation=#{designation}
+	</update>
 </mapper>  
