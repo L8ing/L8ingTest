@@ -7,10 +7,12 @@ import test.jav.db.DBHandler;
 
 public class JavGetter {
 
+	public static final String parentDir = "e:\\books\\";
+
 	public static void main(String[] args) throws Exception {
 		List<Actress> actress = DBHandler.findActressByRank("A");
-		for(Actress a : actress){
-			String name = a.getName();
+		for (Actress a : actress) {
+			DesignationSearcher.searchActress(a);
 		}
 	}
 }

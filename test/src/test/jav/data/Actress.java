@@ -8,6 +8,8 @@ public class Actress {
 
 	private String rank;
 
+	private int uncensored = -1;;
+
 	private String alias1;
 
 	private String alias2;
@@ -92,5 +94,13 @@ public class Actress {
 
 	public void setAlias6(String alias6) {
 		this.alias6 = alias6;
+	}
+
+	public int getUncensored() {
+		return uncensored;
+	}
+
+	public void setUncensored(int uncensored) {
+		this.uncensored = uncensored;
 	}
 }

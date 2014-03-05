@@ -33,9 +33,9 @@
 	</select>
 	<insert id="insertActress" parameterType="Actress">
 		insert into
-		t_actress(name,rank,alias1,alias2,alias3,alias4,alias5,alias6)
+		t_actress(name,rank,uncensored,alias1,alias2,alias3,alias4,alias5,alias6)
 		values
-		(#{name},#{rank},#{alias1},#{alias2},#{alias3},#{alias4},#{alias5},#{alias6})
+		(#{name},#{rank},#{uncensored},#{alias1},#{alias2},#{alias3},#{alias4},#{alias5},#{alias6})
 	</insert>
 	<insert id="insertVideo" parameterType="Video">
 		insert into
@@ -45,7 +45,7 @@
 	</insert>
 	<update id="updateActress" parameterType="Actress">
 		update t_actress set
-		rank=#{rank},alias1=#{alias1},alias2=#{alias2},alias3=#{alias3},
+		rank=#{rank},uncensored=#{uncensored},alias1=#{alias1},alias2=#{alias2},alias3=#{alias3},
 		alias4=#{alias4},alias5=#{alias5},alias6=#{alias6}
 		where name=#{name}
 	</update>

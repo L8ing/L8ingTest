@@ -41,21 +41,27 @@ public class DBHandler {
 		return t;
 	}
 
-	public static int updateActress(Actress actress) throws IOException {
-		SqlSession session = openSession();
-		MybatisMapper userMapper = session.getMapper(MybatisMapper.class);
-
-		Actress a = userMapper.findActressByName(actress.getName());
-		Field[] fields = actress.getClass().getDeclaredFields();
+	private static void updateObject(Object src, Object des) {
+		Field[] fields = src.getClass().getDeclaredFields();
 		for (Field f : fields) {
 			try {
 				f.setAccessible(true);
-				Object o = f.get(actress);
+				Object o = f.get(src);
 				if (o != null) {
 					String type = o.getClass().getName();
 					if ("java.lang.String".equals(type)) {
 						String s = (String) o;
-						f.set(a, s);
+						f.set(des, s);
+					} else if ("java.lang.Integer".equals(type)) {
+						Integer s = (Integer) o;
+						if (s != -1) {
+							f.set(des, s);
+						}
+					} else if ("java.lang.Double".equals(type)) {
+						Double s = (Double) o;
+						if (s >= 0.01) {
+							f.set(des, s);
+						}
 					}
 				}
 			} catch (IllegalArgumentException e) {
@@ -64,7 +70,13 @@ public class DBHandler {
 				e.printStackTrace();
 			}
 		}
+	}
 
+	public static int updateActress(Actress actress) throws IOException {
+		SqlSession session = openSession();
+		MybatisMapper userMapper = session.getMapper(MybatisMapper.class);
+		Actress a = userMapper.findActressByName(actress.getName());
+		updateObject(actress, a);
 		int t = userMapper.updateActress(a);
 		session.commit();
 		session.close();
@@ -84,34 +96,7 @@ public class DBHandler {
 		SqlSession session = openSession();
 		MybatisMapper userMapper = session.getMapper(MybatisMapper.class);
 		Video v = userMapper.findVideoByDesignation(video.getDesignation());
-		Field[] fields = video.getClass().getDeclaredFields();
-		for (Field f : fields) {
-			try {
-				f.setAccessible(true);
-				Object o = f.get(video);
-				if (o != null) {
-					String type = o.getClass().getName();
-					if ("java.lang.String".equals(type)) {
-						String s = (String) o;
-						f.set(v, s);
-					} else if ("java.lang.Integer".equals(type)) {
-						Integer s = (Integer) o;
-						if (s != -1) {
-							f.set(v, s);
-						}
-					} else if ("java.lang.Double".equals(type)) {
-						Double s = (Double) o;
-						if (s >= 0.01) {
-							f.set(v, s);
-						}
-					}
-				}
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
+		updateObject(video, v);
 		int t = userMapper.updateVideo(v);
 		session.commit();
 		session.close();
