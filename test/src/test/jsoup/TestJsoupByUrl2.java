@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,7 +24,9 @@ public class TestJsoupByUrl2 {
 
 	private static void handleRef(FileOutputStream fos, String url)
 			throws Exception {
-		Document doc = Jsoup.connect(url).get();
+		Connection connection = Jsoup.connect(url);
+		connection.timeout(60000);
+		Document doc = connection.get();
 		String title = doc.title();
 		Element body = doc.body();
 		Element content = body.getElementById("main");
