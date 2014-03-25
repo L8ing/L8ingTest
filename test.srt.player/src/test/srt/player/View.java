@@ -35,6 +35,7 @@ import org.eclipse.ui.part.ViewPart;
 import test.srt.player.utils.SrtBody;
 import test.srt.player.utils.SrtFileParser;
 
+// TODO 暂停、快进快退、时间轴、置顶
 public class View extends ViewPart {
 
 	public static final String ID = "test.srt.player.view";
