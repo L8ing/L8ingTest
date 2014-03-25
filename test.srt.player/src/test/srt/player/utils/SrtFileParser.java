@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +12,8 @@ import java.util.List;
 
 public class SrtFileParser {
 
-	public static List<SrtBody> parse(String path) {
+	public static List<SrtBody> parse(String path) throws IOException,
+			ParseException {
 		int status = 0;
 		List<SrtBody> content = new ArrayList<SrtBody>();
 		BufferedReader br = null;
@@ -19,7 +21,6 @@ public class SrtFileParser {
 			String str = null;
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(
 					path)));
-			// br = new BufferedReader(new FileReader(file));
 			SrtBody srtBody = new SrtBody();
 			StringBuffer sb = new StringBuffer();
 			while ((str = br.readLine()) != null) {
@@ -58,20 +59,15 @@ public class SrtFileParser {
 					break;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		} finally {
 			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-				}
+				br.close();
 			}
 		}
 		return content;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		List<SrtBody> l = parse("d:\\Forrest.Gump.1994.Sapphire.Bluray.1080p.DTS-HD.x264-Grym.¼òÌå&Ó¢ÎÄ.srt");
 		System.out.println(l);
 	}

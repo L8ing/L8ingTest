@@ -1,6 +1,8 @@
 package test.srt.player;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,15 +36,10 @@ import test.srt.player.utils.SrtBody;
 import test.srt.player.utils.SrtFileParser;
 
 public class View extends ViewPart {
+
 	public static final String ID = "test.srt.player.view";
 
-	// private TableViewer viewer;
-
 	private Display display;
-
-	private Button importButton;
-
-	private Button runButton;
 
 	private StyledText styledText;
 
@@ -99,7 +96,7 @@ public class View extends ViewPart {
 			Composite buttonComposite = new Composite(parent, SWT.NONE);
 			buttonComposite.setLayout(new GridLayout(1, false));
 			buttonComposite.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-			importButton = new Button(buttonComposite, SWT.PUSH);
+			Button importButton = new Button(buttonComposite, SWT.PUSH);
 			importButton.setText("import");
 			importButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			importButton.addListener(SWT.Selection, new Listener() {
@@ -116,28 +113,43 @@ public class View extends ViewPart {
 					if (textFile == null) {
 						return;
 					}
-					content = SrtFileParser.parse(textFile);
+					try {
+						content = SrtFileParser.parse(textFile);
+					} catch (IOException | ParseException e) {
+						MessageDialog.openError(parent.getShell(), "字幕文件解析出错",
+								e.getMessage());
+						return;
+					}
 				}
 			});
-			runButton = new Button(buttonComposite, SWT.PUSH);
+			Button runButton = new Button(buttonComposite, SWT.PUSH);
 			runButton.setText("run");
 			runButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			runButton.addListener(SWT.Selection, new Listener() {
 				@Override
 				public void handleEvent(Event arg0) {
-					if (isStart) {
-						isStart = false;
-						runButton.setText("run");
-					} else {
+					if (!isStart) {
 						if (content == null) {
 							MessageDialog.openError(parent.getShell(), "错误",
 									"未指定字幕文件");
+							return;
 						}
 						isStart = true;
-						runButton.setText("stop");
 						Timer timer = new Timer();
 						ManageTask task = new ManageTask(0);
 						timer.schedule(task, 0);
+					}
+				}
+			});
+
+			Button stopButton = new Button(buttonComposite, SWT.PUSH);
+			stopButton.setText("stop");
+			stopButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			stopButton.addListener(SWT.Selection, new Listener() {
+				@Override
+				public void handleEvent(Event arg0) {
+					if (isStart) {
+						isStart = false;
 					}
 				}
 			});
@@ -169,11 +181,14 @@ public class View extends ViewPart {
 				@Override
 				public void handleEvent(Event arg0) {
 					if (isStart) {
-
+						MessageDialog.openError(parent.getShell(), "错误",
+								"请先停止播放");
+						return;
 					} else {
 						if (content == null) {
 							MessageDialog.openError(parent.getShell(), "错误",
 									"未指定字幕文件");
+							return;
 						}
 						Calendar c = Calendar.getInstance();
 						int hour = Integer.parseInt(hourSpinner.getText());
@@ -191,7 +206,6 @@ public class View extends ViewPart {
 						}
 						if (index >= 0) {
 							isStart = true;
-							runButton.setText("stop");
 							Timer timer = new Timer();
 							ManageTask task = new ManageTask(index);
 							timer.schedule(task, 0);
@@ -204,6 +218,7 @@ public class View extends ViewPart {
 		styledText.setFont(new Font(parent.getDisplay(), "宋体", 18, SWT.BOLD));
 		styledText.setEditable(false);
 		styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		// OSUtil.setShellAlpha(parent.getShell(), 100);
 	}
 
 	class ManageTask extends TimerTask {
@@ -281,6 +296,5 @@ public class View extends ViewPart {
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-		importButton.setFocus();
 	}
 }
