@@ -13,7 +13,7 @@ public class TestFile {
         // String[] keys = { "我", "是", "个", "一", "你", "有", "不", "的", "了", "在",
         // "道", "他", "她" };
         // String[] keys = { "绝伦","自忖"};
-        String[] keys = { "琴儿" };
+        String[] keys = { "易筋经" };
         File f = new File(dir);
         for (String key : keys) {
             System.out.println("********************");
