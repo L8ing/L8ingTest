@@ -3,6 +3,7 @@ package test.srt.player;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,14 +11,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -28,14 +24,12 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 import test.srt.player.utils.SrtBody;
 import test.srt.player.utils.SrtFileParser;
 
-// TODO ÔÝÍ£¡¢¿ì½ø¿ìÍË¡¢Ê±¼äÖá¡¢ÖÃ¶¥
 public class View extends ViewPart {
 
 	public static final String ID = "test.srt.player.view";
@@ -46,45 +40,11 @@ public class View extends ViewPart {
 
 	private List<SrtBody> content;
 
-	private boolean isStart = false;
+	private ManageTask task;
 
-	/**
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
-	 */
-	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
+	private Timer timer = new Timer();
 
-		public void dispose() {
-		}
-
-		public Object[] getElements(Object parent) {
-			if (parent instanceof Object[]) {
-				return (Object[]) parent;
-			}
-			return new Object[0];
-		}
-	}
-
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
+	private Text timeText;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -92,10 +52,13 @@ public class View extends ViewPart {
 	 */
 	public void createPartControl(final Composite parent) {
 		display = parent.getDisplay();
-		parent.setLayout(new GridLayout(3, false));
+		parent.setLayout(new GridLayout(2, false));
+
+		Composite panelComposite = new Composite(parent, SWT.NONE);
+		panelComposite.setLayout(new GridLayout(1, false));
 		{
-			Composite buttonComposite = new Composite(parent, SWT.NONE);
-			buttonComposite.setLayout(new GridLayout(1, false));
+			Composite buttonComposite = new Composite(panelComposite, SWT.NONE);
+			buttonComposite.setLayout(new GridLayout(5, false));
 			buttonComposite.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 			Button importButton = new Button(buttonComposite, SWT.PUSH);
 			importButton.setText("import");
@@ -124,21 +87,39 @@ public class View extends ViewPart {
 				}
 			});
 			Button runButton = new Button(buttonComposite, SWT.PUSH);
-			runButton.setText("run");
+			runButton.setText("play");
 			runButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			runButton.addListener(SWT.Selection, new Listener() {
 				@Override
 				public void handleEvent(Event arg0) {
-					if (!isStart) {
+					if (task == null || task.isStop()) {
 						if (content == null) {
 							MessageDialog.openError(parent.getShell(), "´íÎó",
 									"Î´Ö¸¶¨×ÖÄ»ÎÄ¼þ");
 							return;
 						}
-						isStart = true;
-						Timer timer = new Timer();
-						ManageTask task = new ManageTask(0);
+						task = new ManageTask(0);
+						task.setPlay();
 						timer.schedule(task, 0);
+					} else if (task.isPause()) {
+						if (task != null) {
+							task.setPlay();
+							synchronized (task) {
+								task.notifyAll();
+							}
+						}
+					}
+				}
+			});
+
+			Button pauseButton = new Button(buttonComposite, SWT.PUSH);
+			pauseButton.setText("pause");
+			pauseButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			pauseButton.addListener(SWT.Selection, new Listener() {
+				@Override
+				public void handleEvent(Event arg0) {
+					if (task != null && task.isPlay()) {
+						task.setPause();
 					}
 				}
 			});
@@ -149,16 +130,20 @@ public class View extends ViewPart {
 			stopButton.addListener(SWT.Selection, new Listener() {
 				@Override
 				public void handleEvent(Event arg0) {
-					if (isStart) {
-						isStart = false;
+					if (task != null && task.isPlay()) {
+						task.setStop();
 					}
 				}
 			});
+			
+			timeText = new Text(buttonComposite, SWT.BORDER);
+			timeText.setEditable(false);
+
 		}
 
 		{
-			Composite jumpComposite = new Composite(parent, SWT.NONE);
-			jumpComposite.setLayout(new GridLayout(1, false));
+			Composite jumpComposite = new Composite(panelComposite, SWT.NONE);
+			jumpComposite.setLayout(new GridLayout(2, false));
 			jumpComposite.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 			Composite timeComposite = new Composite(jumpComposite, SWT.NONE);
 			timeComposite.setLayout(new GridLayout(5, false));
@@ -181,7 +166,7 @@ public class View extends ViewPart {
 			jumpButton.addListener(SWT.Selection, new Listener() {
 				@Override
 				public void handleEvent(Event arg0) {
-					if (isStart) {
+					if (task != null && (task.isPlay() || task.isPause())) {
 						MessageDialog.openError(parent.getShell(), "´íÎó",
 								"ÇëÏÈÍ£Ö¹²¥·Å");
 						return;
@@ -206,14 +191,15 @@ public class View extends ViewPart {
 							index = srtbody.getIndex();
 						}
 						if (index >= 0) {
-							isStart = true;
 							Timer timer = new Timer();
-							ManageTask task = new ManageTask(index);
+							task = new ManageTask(index);
+							task.setPlay();
 							timer.schedule(task, 0);
 						}
 					}
 				}
 			});
+
 		}
 		styledText = new StyledText(parent, SWT.NONE);
 		styledText.setFont(new Font(parent.getDisplay(), "ËÎÌå", 18, SWT.BOLD));
@@ -224,10 +210,51 @@ public class View extends ViewPart {
 
 	class ManageTask extends TimerTask {
 
+		/**
+		 * -1:Í£Ö¹£»0£º²¥·Å£»1£ºÔÝÍ£
+		 */
+		private int status = -1;
+
 		private int index;
 
 		public ManageTask(int index) {
 			this.index = index;
+		}
+
+		public boolean isPlay() {
+			if (status == 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public boolean isPause() {
+			if (status == 1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public boolean isStop() {
+			if (status == -1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public void setPlay() {
+			status = 0;
+		}
+
+		public void setPause() {
+			status = 1;
+		}
+
+		public void setStop() {
+			status = -1;
 		}
 
 		public void run() {
@@ -242,18 +269,29 @@ public class View extends ViewPart {
 
 			for (int i = index; i < content.size(); i++) {
 				SrtBody srtbody = content.get(i);
-				if (!isStart) {
+				if (status == -1) {
 					if (!display.isDisposed()) {
 						Runnable runnable = new Runnable() {
 							public void run() {
+								timeText.setText("");
 								styledText.setText("");
 							}
 						};
 						display.asyncExec(runnable);
 					}
 					break;
+				} else if (status == 1) {
+					synchronized (this) {
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 				Date start = srtbody.getStart();
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+				final String time = sdf.format(start);
 				long startTime = start.getTime();
 				long endTime = srtbody.getEnd().getTime();
 				final String text = srtbody.getText();
@@ -266,6 +304,7 @@ public class View extends ViewPart {
 				if (!display.isDisposed()) {
 					Runnable runnable = new Runnable() {
 						public void run() {
+							timeText.setText(time);
 							styledText.setText(text);
 						}
 					};
@@ -279,15 +318,16 @@ public class View extends ViewPart {
 					e.printStackTrace();
 				}
 				origionalTime = endTime;
-			}
 
-			if (!display.isDisposed()) {
-				Runnable runnable = new Runnable() {
-					public void run() {
-						styledText.setText("");
-					}
-				};
-				display.asyncExec(runnable);
+				if (!display.isDisposed()) {
+					Runnable runnable = new Runnable() {
+						public void run() {
+							timeText.setText("");
+							styledText.setText("");
+						}
+					};
+					display.asyncExec(runnable);
+				}
 			}
 
 		}
