@@ -22,8 +22,6 @@ public class TestJsoupByUrl7 {
 
 	private static final String titleRedundant = "";
 
-	private static boolean isSysout = false;
-
 	private static void handleRef(FileOutputStream fos, String url)
 			throws Exception {
 		try {
