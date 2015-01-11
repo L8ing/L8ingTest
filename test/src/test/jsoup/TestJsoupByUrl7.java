@@ -74,7 +74,7 @@ public class TestJsoupByUrl7 {
 			for (Element link : links) {
 				List<Node> children = link.childNodes();
 				String linkHref = "";
-				String linkText = link.text();
+//				String linkText = link.text();
 				for (Node child : children) {
 					String href = child.attr("href");
 					if (href != null && href.length() > 0) {
