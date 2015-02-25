@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ranker Plug-in
+Bundle-SymbolicName: ranker; singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ cn.com.agree.commons.csv;bundle-version="3.3.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
