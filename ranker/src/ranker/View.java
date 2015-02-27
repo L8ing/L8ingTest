@@ -41,8 +41,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
 
 import ranker.dialog.RankDialog;
+import ranker.util.JsonUtil;
 import ranker.util.Utils;
-import cn.com.agree.commons.csv.CsvUtil;
 
 public class View extends ViewPart {
 	private static final String REFRESH = "refresh";
@@ -88,6 +88,8 @@ public class View extends ViewPart {
 			createPane(i, item1, composite1);
 		}
 
+		cFolder.setSelection(0);
+
 		Properties properties = Utils.loadPropertiesFromFile(Utils
 				.getPropFile());
 		String s = properties.getProperty(FILE);
@@ -98,7 +100,7 @@ public class View extends ViewPart {
 				content[i] = "";
 			}
 		} else {
-			content = CsvUtil.csvToStringArray(s);
+			content = JsonUtil.parse(s);
 		}
 		CTabItem[] items = cFolder.getItems();
 		for (int i = 0; i < items.length; i++) {
@@ -179,10 +181,10 @@ public class View extends ViewPart {
 						content[i] = "";
 					}
 				} else {
-					content = CsvUtil.csvToStringArray(s);
+					content = JsonUtil.parse(s);
 				}
 				content[index] = textFile;
-				String prop = CsvUtil.stringArrayToCsv(content);
+				String prop = JsonUtil.build(content);
 				properties.setProperty(FILE, prop);
 				Utils.writeProperties2File(properties, Utils.getPropFile());
 			}
@@ -284,15 +286,17 @@ public class View extends ViewPart {
 							Properties properties = Utils
 									.loadPropertiesFromFile(Utils.getPropFile());
 							String s = properties.getProperty(FILTER);
-							String[] filter = CsvUtil.csvToStringArray(s);
-							for (String f : filter) {
-								if (pathname.getName().endsWith(f)) {
-									return false;
+							if (s != null) {
+								String[] filter = JsonUtil.parse(s);
+								for (String f : filter) {
+									if (pathname.getName().endsWith(f)) {
+										return false;
+									}
 								}
 							}
 
 							String rank = properties.getProperty(FILTERRANK);
-							String[] ranks = CsvUtil.csvToStringArray(rank);
+							String[] ranks = JsonUtil.parse(rank);
 							if (ranks.length == 0) {
 								return true;
 							}

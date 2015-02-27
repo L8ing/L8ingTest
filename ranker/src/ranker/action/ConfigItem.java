@@ -22,7 +22,7 @@ public class ConfigItem extends ContributionItem {
 
 	private static String id = "ranker.config";
 
-	private static String LABEL = "ÅäÖÃ¹ıÂË";
+	private static String LABEL = "ºó×º¹ıÂË";
 
 	public ConfigItem() {
 		this(id);

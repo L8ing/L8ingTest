@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import ranker.View;
+import ranker.util.JsonUtil;
 import ranker.util.Utils;
 
 public class FilterDialog extends Dialog {
@@ -53,6 +54,10 @@ public class FilterDialog extends Dialog {
 		Properties properties = Utils.loadPropertiesFromFile(Utils
 				.getPropFile());
 		String s = properties.getProperty(View.FILTER);
+		if (s == null) {
+			String[] ss = new String[0];
+			s = JsonUtil.build(ss);
+		}
 		text.setText(s);
 		return pane;
 	}

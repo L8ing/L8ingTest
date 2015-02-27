@@ -4,6 +4,7 @@ Bundle-Name: Ranker Plug-in
 Bundle-SymbolicName: ranker; singleton:=true
 Bundle-Version: 1.0.0
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui,
- cn.com.agree.commons.csv;bundle-version="3.3.0"
+ org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: lib/com.alibaba.fastjson_1.0.0.jar,
+ .
